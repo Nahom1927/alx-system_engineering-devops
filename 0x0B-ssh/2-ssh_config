@@ -1,47 +1,101 @@
-# This is the ssh client system-wide configuration file.  See
-# ssh_config(5) for more information.  This file provides defaults for
-# users, and the values can be changed in per-user configuration files
-# or on the command line.
+#include  <stdio.h>
+#include <string.h>
+#define MAXLINES 5000
 
-# Configuration data is parsed as follows:
-#  1. command line options
-#  2. user-specific file
-#  3. system-wide file
-# Any configuration value is only changed the first time it is set.
-# Thus, host-specific definitions should be at the beginning of the
-# configuration file, and defaults at the end.
+char *lineptr[MAXLINES];
 
-# Site-wide defaults for some commonly used options.  For a comprehensive
-# list of available options, their meanings and defaults, please see the
-# ssh_config(5) man page.
+int readlines(char *lineptr[], int nlines);
+void writelines(char *lineptr[], int nlines);
+void qsort(char *lineptr[], int left, int right);
 
-Host *
-#   ForwardAgent no
-#   ForwardX11 no
-#   ForwardX11Trusted yes
-#   PasswordAuthentication no
-#   HostbasedAuthentication no
-#   GSSAPIAuthentication no
-#   GSSAPIDelegateCredentials no
-#   GSSAPIKeyExchange no
-#   GSSAPITrustDNS no
-#   BatchMode no
-#   CheckHostIP yes
-#   AddressFamily any
-#   ConnectTimeout 0
-#   StrictHostKeyChecking ask
-#   IdentityFile ~/.ssh/holberton
-#   Port 22
-#   Protocol 2
-#   Ciphers aes128-ctr,aes192-ctr,aes256-ctr,aes128-cbc,3des-cbc
-#   MACs hmac-md5,hmac-sha1,umac-64@openssh.com
-#   EscapeChar ~
-#   Tunnel no
-#   TunnelDevice any:any
-#   PermitLocalCommand no
-#   VisualHostKey no
-#   ProxyCommand ssh -q -W %h:%p gateway.example.com
-#   RekeyLimit 1G 1h
-    SendEnv LANG LC_*
-    HashKnownHosts yes
-    GSSAPIAuthentication yes
+
+/*void strcpy(char *s, char *t)
+{
+	while (*s++ = *t++)
+		;
+}
+*/
+
+int main(void)
+{
+	int nlines;
+
+	if((nlines = readlines(lineptr, MAXLINES)) >= 0){
+		qsort(lineptr, 0, nlines - 1);
+		writelines(lineptr, nlines);
+		return (0);
+	}else {
+		printf("error");
+		return (1);
+	}
+}
+#define MAXLEN 1000
+int getlinee(char *, int);
+char *alloc(int);
+int readlines(char *lineptr[], int maxlines)
+{
+	int len, nlines;
+	char *p, line[MAXLEN];
+
+	nlines = 0;
+	while((len >= getlinee(line, MAXLEN)) > 0)
+		if(nlines >= maxlines || (p = alloc(len)) == NULL)
+			return -1;
+		else {
+			line[len - 1] = '\0';
+			strcpy(p, line);
+			lineptr [nlines++] = p;
+		}
+	return (nlines);
+}
+
+void writelines(char *lineptr[], int nlines)
+{
+	while (nlines-- > 0)
+		printf("%s\n", *lineprt++);
+}
+void qsort(char *v[], int left, int right)
+{
+	int i, last;
+	void swap(char *v[], int i, int j);
+	if (left >= right)
+		return;
+	swap(v, left, (left + right)/2);
+	last = left;
+	for (i = left+1; i <= right; i++)
+		if (strcmp(v[i], v[left]) < 0)
+			swap(v, ++last, i);
+	swap(v, left, last);
+	qsort(v, left, last-1);
+	qsort(v, last+1, right);
+}
+void swap(char *v[], int i, int j)
+{
+	char *temp;
+	temp = v[i];
+	v[i] = v[j];
+	v[j] = temp;
+}
+#define ALLOCSIZE 1000
+char allocbuf[ALLOCSIZE];
+char *allocp = allocbuf;
+char *alloc(int n)
+{
+	if(allocbuf + ALLOCSIZE - allocp >= n){
+		allocp += n;
+		return(allocp - n);
+	} else
+		return(0);
+}
+int getlinee(char *s, int lim)
+{
+	int c, i;
+	for (i=0; i < lim-1 && (c=getchar())!=EOF && c!='\n'; ++i)
+		s[i] = c;
+	if (c == '\n') {
+		s[i] = c;
+		++i;
+	}
+	s[i] = '\0';
+	return i;
+}
