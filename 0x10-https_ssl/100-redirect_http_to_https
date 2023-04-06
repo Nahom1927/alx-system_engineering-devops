@@ -1,42 +1,18 @@
 
-global
-    log     /dev/log local0
-    maxconn 2048
-    user    haproxy
-    group   haproxy
-    tune.ssl.default-dh-param 2048
+sylvain@ubuntu$ curl -sIL http://www.holberton.online
+HTTP/1.1 301 Moved Permanently
+Content-length: 0
+Location: https://www.holberton.online/
+Connection: close
 
-defaults
-    log     global
-    mode    http
-    option  httplog
-    option  dontlognull
-    retries 3
-    option  redispatch
-    timeout connect  5000
-    timeout client  10000
-    timeout server  10000
-    option  forwardfor
-    option  http-server-close
+HTTP/1.1 200 OK
+Server: nginx/1.4.6 (Ubuntu)
+Date: Tue, 28 Feb 2017 02:19:18 GMT
+Content-Type: text/html
+Content-Length: 30
+Last-Modified: Tue, 21 Feb 2017 07:21:32 GMT
+ETag: "58abea7c-1e"
+X-Served-By: 03-web-01
+Accept-Ranges: bytes
 
-frontend www-http
-    bind   0.0.0.0:80
-    reqadd X-Forwarded-Proto:\ http
-    default_backend www-backend
-    redirect scheme https code 301 if !{ ssl_fc }
-
-frontend www-https
-    bind   0.0.0.0:443 ssl crt /etc/haproxy/certs/www.bdbnb.site.pem
-    reqadd X-Forwarded-Proto:\ https
-    acl    letsencrypt-acl path_beg /.well-known/acme-challenge/
-    use_backend letsencrypt-backend if letsencrypt-acl
-    default_backend www-backend
-
-backend www-backend
-    balance  roundrobin
-    redirect scheme https if !{ ssl_fc }
-    server 375-web-01 104.196.168.90:80 check
-    server 375-web-02 35.196.46.172:80 check
-
-backend letsencrypt-backend
-    server letsencrypt 127.0.0.1:54321
+sylvain@ubuntu$
